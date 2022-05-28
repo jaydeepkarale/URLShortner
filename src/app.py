@@ -1,11 +1,9 @@
-import http
 import validators
 from urllib.request import urlopen
 from http import HTTPStatus
 import string
 import random
 from aiohttp import web
-from pyngrok import ngrok
 import requests
 import json
 
