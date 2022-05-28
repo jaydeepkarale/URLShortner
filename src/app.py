@@ -30,8 +30,7 @@ def validate_long_url_format(url: str):
     print(response)
 
 # shorten the url by generating a 6 character code & appending to base url
-def shorten_url(url: str):   
-    print(url)
+def shorten_url(url: str):       
     ngrok_url = get_ngrok_url()
     size = 6
     chars=string.ascii_uppercase + string.digits
