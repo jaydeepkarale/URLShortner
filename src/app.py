@@ -7,12 +7,12 @@ from aiohttp import web
 import requests
 import json
 
-# this is domain we need to buy
-base_url = "http://127.0.0.1:8080/"
+# use a dictionary for now instead of a DB
 url_mapping  = {}
 
 routes = web.RouteTableDef()
 
+# get the ngrok tunnel url
 def get_ngrok_url():
     url = "http://localhost:4040/api/tunnels"
     res = requests.get(url)
@@ -38,15 +38,14 @@ def shorten_url(url: str):
     return short_url
 
 @routes.post('/shorten')
-async def write_mapping_to_db(request):
-    
+async def write_mapping_to_db(request):    
     data  = await request.post()
     longurl = data['url']
     if validate_long_url_format(longurl) and validate_url(longurl):
         short_url = shorten_url(longurl)
     return web.Response(text=short_url)
 
-@routes.post('/{code}')
+@routes.get('/{code}')
 async def do_the_magic(request):
     data  = request.match_info["code"]
     longurl = url_mapping[data]
@@ -57,6 +56,7 @@ async def do_the_magic(request):
 # perform validation to check URL is a valid website
 def validate_url(url: str):
     try:
+        print(requests.get(url))
         response = urlopen(url).getcode()        
         if response == HTTPStatus.OK:
             print(response)
