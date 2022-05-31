@@ -8,7 +8,7 @@ import requests
 import json
 
 # use a dictionary for now instead of a DB
-url_mapping  = {}
+url_mapping = {}
 
 routes = web.RouteTableDef()
 
@@ -27,43 +27,47 @@ def validate_long_url_format(url: str):
     return response
     print(response)
 
+
 # shorten the url by generating a 6 character code & appending to base url
-def shorten_url(url: str):       
+def shorten_url(url: str):
     ngrok_url = get_ngrok_url()
     size = 6
-    chars=string.ascii_uppercase + string.digits
-    code = ''.join(random.choice(chars) for _ in range(size))
-    short_url  = ngrok_url + "/" +code
+    chars = string.ascii_uppercase + string.digits
+    code = "".join(random.choice(chars) for _ in range(size))
+    short_url = ngrok_url + "/" + code
     url_mapping[code] = url
     return short_url
 
-@routes.post('/shorten')
-async def write_mapping_to_db(request):    
-    data  = await request.post()
-    longurl = data['url']
+
+@routes.post("/shorten")
+async def write_mapping_to_db(request):
+    data = await request.post()
+    longurl = data["url"]
     if validate_long_url_format(longurl) and validate_url(longurl):
         short_url = shorten_url(longurl)
     return web.Response(text=short_url)
 
-@routes.get('/{code}')
+
+@routes.get("/{code}")
 async def do_the_magic(request):
-    data  = request.match_info["code"]
+    data = request.match_info["code"]
     longurl = url_mapping[data]
     print(longurl)
     return web.HTTPFound(longurl)
-    
+
 
 # perform validation to check URL is a valid website
 def validate_url(url: str):
     try:
         print(requests.get(url))
-        response = urlopen(url).getcode()        
+        response = urlopen(url).getcode()
         if response == HTTPStatus.OK:
             print(response)
             return True
     except Exception as ex:
         print(ex)
     return False
+
 
 if __name__ == "__main__":
     app = web.Application()
