@@ -1,3 +1,4 @@
+"""Main file for performing url shortening"""
 import validators
 from urllib.request import urlopen
 from http import HTTPStatus
@@ -14,6 +15,7 @@ routes = web.RouteTableDef()
 
 # get the ngrok tunnel url
 def get_ngrok_url():
+    """Function to get ngrok url"""
     url = "http://localhost:4040/api/tunnels"
     res = requests.get(url)
     res_unicode = res.content.decode("utf-8")
@@ -23,6 +25,9 @@ def get_ngrok_url():
 
 # perform validation to check if URL is in correct format
 def validate_long_url_format(url: str):
+    """Function to validate if url is in correct format
+    :param url: The long url to be shortened
+    """
     response = validators.url(url)
     return response
     print(response)
@@ -30,6 +35,9 @@ def validate_long_url_format(url: str):
 
 # shorten the url by generating a 6 character code & appending to base url
 def shorten_url(url: str):
+    """Function to shorten url
+    :param url: The long url to be shortened
+    """
     ngrok_url = get_ngrok_url()
     size = 6
     chars = string.ascii_uppercase + string.digits
@@ -41,6 +49,9 @@ def shorten_url(url: str):
 
 @routes.post("/shorten")
 async def write_mapping_to_db(request):
+    """Function to write longurl-shorturl mapping to dictionary
+    :param request: HTTP request
+    """
     data = await request.post()
     longurl = data["url"]
     if validate_long_url_format(longurl) and validate_url(longurl):
@@ -50,6 +61,9 @@ async def write_mapping_to_db(request):
 
 @routes.get("/{code}")
 async def do_the_magic(request):
+    """Function to retrieve long URL based on code
+    :param request: HTTP request
+    """
     data = request.match_info["code"]
     longurl = url_mapping[data]
     print(longurl)
@@ -58,6 +72,9 @@ async def do_the_magic(request):
 
 # perform validation to check URL is a valid website
 def validate_url(url: str):
+    """Function to validate if long url is a valid website
+    :param url: long url to be shortened
+    """
     try:
         print(requests.get(url))
         response = urlopen(url).getcode()
