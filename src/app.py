@@ -1,12 +1,13 @@
 """Main file for performing url shortening"""
-import validators
-from urllib.request import urlopen
-from http import HTTPStatus
-import string
-import random
-from aiohttp import web
-import requests
 import json
+import random
+import string
+from http import HTTPStatus
+from urllib.request import urlopen
+
+import requests
+import validators
+from aiohttp import web
 
 # use a dictionary for now instead of a DB
 url_mapping = {}

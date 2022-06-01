@@ -4,7 +4,6 @@ content-type: application/x-www-form-urlencoded
 
 url=www.twitter.com
 
-
 ###
 GET {{shorturl.response.body}} HTTP/1.1
 
