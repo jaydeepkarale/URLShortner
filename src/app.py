@@ -76,8 +76,8 @@ def validate_url(url: str):
     :param url: long url to be shortened
     """
     try:
-        response = urlopen(url).getcode()
-        if response == HTTPStatus.OK:
+        response = requests.get(url)        
+        if response.status_code == HTTPStatus.OK:
             return True
     except URLError as ex:
         print(ex)
