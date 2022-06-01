@@ -31,8 +31,6 @@ def validate_long_url_format(url: str):
     """
     response = validators.url(url)
     return response
-    print(response)
-
 
 # shorten the url by generating a 6 character code & appending to base url
 def shorten_url(url: str):
