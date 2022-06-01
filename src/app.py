@@ -75,9 +75,9 @@ def validate_url(url: str):
     """Function to validate if long url is a valid website
     :param url: long url to be shortened
     """
-    try:        
+    try:
         response = urlopen(url).getcode()
-        if response == HTTPStatus.OK:            
+        if response == HTTPStatus.OK:        
             return True
     except URLError as ex:
         print(ex)
