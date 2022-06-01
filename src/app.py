@@ -3,7 +3,6 @@ import json
 import random
 import string
 from http import HTTPStatus
-from urllib.request import urlopen
 from urllib.error import URLError
 
 import requests
@@ -76,11 +75,13 @@ def validate_url(url: str):
     :param url: long url to be shortened
     """
     try:
-        response = requests.get(url)        
+        response = requests.get(url)
         if response.status_code == HTTPStatus.OK:
             return True
     except URLError as ex:
         print(ex)
+    except Exception as ex_general:
+        print(ex_general)
     return False
 
 
