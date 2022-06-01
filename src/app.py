@@ -1,5 +1,4 @@
 """Main file for performing url shortening"""
-from http.client import InvalidURL
 from http import HTTPStatus
 import json
 import random
