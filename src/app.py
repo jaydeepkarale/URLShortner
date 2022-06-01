@@ -80,8 +80,6 @@ def validate_url(url: str):
             return True
     except URLError as ex:
         print(ex)
-    except Exception as ex_general:
-        print(ex_general)
     return False
 
 
