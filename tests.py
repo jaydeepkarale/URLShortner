@@ -30,6 +30,15 @@ class TestApp(unittest.TestCase):
         """Function to test if URL validation return True for invalid URL format"""
         self.assertFalse(app.validate_url(INVALID_TEST_URL))
 
+def suite():
+    suite = unittest.TestSuite()
+    suite.addTest(TestApp("test_validate_long_url_format_validurl"))
+    suite.addTest(TestApp("test_validate_long_url_format_invalidurl"))
+    suite.addTest(TestApp("test_validate_url_valid_url"))
+    suite.addTest(TestApp("test_validate_url_invalid_url"))
+    return suite
+
 
 if __name__ == "__main__":
-    unittest.main()
+    runner = unittest.TextTestRunner()
+    runner.run(suite())
