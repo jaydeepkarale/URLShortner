@@ -4,6 +4,7 @@ import random
 import string
 from http import HTTPStatus
 from urllib.request import urlopen
+from urllib.error import URLError
 
 import requests
 import validators
@@ -74,13 +75,11 @@ def validate_url(url: str):
     """Function to validate if long url is a valid website
     :param url: long url to be shortened
     """
-    try:
-        print(requests.get(url))
+    try:        
         response = urlopen(url).getcode()
-        if response == HTTPStatus.OK:
-            print(response)
+        if response == HTTPStatus.OK:            
             return True
-    except Exception as ex:
+    except URLError as ex:
         print(ex)
     return False
 
