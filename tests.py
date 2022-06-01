@@ -31,12 +31,13 @@ class TestApp(unittest.TestCase):
         self.assertFalse(app.validate_url(INVALID_TEST_URL))
 
 def suite():
-    suite = unittest.TestSuite()
-    suite.addTest(TestApp("test_validate_long_url_format_validurl"))
-    suite.addTest(TestApp("test_validate_long_url_format_invalidurl"))
-    suite.addTest(TestApp("test_validate_url_valid_url"))
-    suite.addTest(TestApp("test_validate_url_invalid_url"))
-    return suite
+    """ Test suite containing tests that are Github compatible""""
+    suit = unittest.TestSuite()
+    suit.addTest(TestApp("test_validate_long_url_format_validurl"))
+    suit.addTest(TestApp("test_validate_long_url_format_invalidurl"))
+    suit.addTest(TestApp("test_validate_url_valid_url"))
+    suit.addTest(TestApp("test_validate_url_invalid_url"))
+    return suit
 
 
 if __name__ == "__main__":

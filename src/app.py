@@ -1,10 +1,10 @@
 """Main file for performing url shortening"""
 from http.client import InvalidURL
+from http import HTTPStatus
 import json
 import random
 import string
-from http import HTTPStatus
-from requests.exceptions import InvalidURL
+import requests.exceptions
 
 import requests
 import validators
@@ -79,7 +79,7 @@ def validate_url(url: str):
         response = requests.get(url)
         if response.status_code == HTTPStatus.OK:
             return True
-    except InvalidURL as ex:
+    except requests.exceptions.InvalidURL as ex:
         print(ex)
     return False
 
