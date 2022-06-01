@@ -31,7 +31,7 @@ class TestApp(unittest.TestCase):
         self.assertFalse(app.validate_url(INVALID_TEST_URL))
 
 def suite():
-    """ Test suite containing tests that are Github compatible""""
+    """ Test suite containing tests that are Github compatible"""
     suit = unittest.TestSuite()
     suit.addTest(TestApp("test_validate_long_url_format_validurl"))
     suit.addTest(TestApp("test_validate_long_url_format_invalidurl"))
