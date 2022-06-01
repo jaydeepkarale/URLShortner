@@ -77,7 +77,7 @@ def validate_url(url: str):
     """
     try:
         response = urlopen(url).getcode()
-        if response == HTTPStatus.OK:        
+        if response == HTTPStatus.OK:    
             return True
     except URLError as ex:
         print(ex)
