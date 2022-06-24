@@ -1,16 +1,13 @@
-"""Main file for performing url shortening"""
+from email import header
+from aiohttp import web
+import sqlite3
+import validators
+import requests
+import requests.exceptions
 from http import HTTPStatus
 import json
-import random
 import string
-import requests.exceptions
-
-import requests
-import validators
-from aiohttp import web
-
-# use a dictionary for now instead of a DB
-url_mapping = {}
+import random
 
 routes = web.RouteTableDef()
 
@@ -23,67 +20,55 @@ def get_ngrok_url():
     res_json = json.loads(res_unicode)
     return res_json["tunnels"][0]["public_url"]
 
+def validate_url_format(longurl: str):
+    """This function validates if the longurl is in a valid format"""
+    return validators.url(longurl)
 
-# perform validation to check if URL is in correct format
-def validate_long_url_format(url: str):
-    """Function to validate if url is in correct format
-    :param url: The long url to be shortened
-    """
-    response = validators.url(url)
-    return response
-
-# shorten the url by generating a 6 character code & appending to base url
-def shorten_url(url: str):
-    """Function to shorten url
-    :param url: The long url to be shortened
-    """
+def validate_url(longurl: str):
+    """This function validates if the longurl is a valid web address"""
+    try:
+        headers = {'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:80.0) Gecko/20100101 Firefox/80.0'}
+        response = requests.get(longurl, headers=headers)
+        return response.status_code == HTTPStatus.OK        
+    except Exception as ex:
+        print(ex)
+        return False
+        
+def shorten_url(longurl: str):
     ngrok_url = get_ngrok_url()
     size = 6
     chars = string.ascii_uppercase + string.digits
     code = "".join(random.choice(chars) for _ in range(size))
-    short_url = ngrok_url + "/" + code
-    url_mapping[code] = url
+    short_url = ngrok_url + "/" + code    
+    try:
+        cursor.execute(f"INSERT INTO URLSHORTNER VALUES (?, ?, ?)",(longurl, short_url, code,))        
+    except Exception as ex:
+        print(ex)
     return short_url
 
-
 @routes.post("/shorten")
-async def write_mapping_to_db(request):
-    """Function to write longurl-shorturl mapping to dictionary
-    :param request: HTTP request
-    """
+async def shorten(request):
+    short_url = "Invalid URL"
     data = await request.post()
     longurl = data["url"]
-    if validate_long_url_format(longurl) and validate_url(longurl):
-        short_url = shorten_url(longurl)
+    if validate_url_format(longurl) and validate_url(longurl):
+        short_url = shorten_url(longurl)            
     return web.Response(text=short_url)
-
+    
 
 @routes.get("/{code}")
-async def do_the_magic(request):
+async def redirect_to_longurl(request):
     """Function to retrieve long URL based on code
     :param request: HTTP request
     """
-    data = request.match_info["code"]
-    longurl = url_mapping[data]
-    print(longurl)
-    return web.HTTPFound(longurl)
-
-
-# perform validation to check URL is a valid website
-def validate_url(url: str):
-    """Function to validate if long url is a valid website
-    :param url: long url to be shortened
-    """
-    try:
-        response = requests.get(url)
-        if response.status_code == HTTPStatus.OK:
-            return True
-    except requests.exceptions.InvalidURL as ex:
-        print(ex)
-    return False
-
+    data = request.match_info["code"]    
+    longurl = cursor.execute("SELECT longurl from URLSHORTNER where code = ?",(data,)).fetchone()        
+    return web.HTTPFound(longurl[0])
 
 if __name__ == "__main__":
+    connection = sqlite3.connect("urlshortner.db")
+    cursor = connection.cursor()
+    cursor.execute("CREATE TABLE IF NOT EXISTS URLSHORTNER (longurl TEXT, shorturl TEXT, code TEXT UNIQUE)")
     app = web.Application()
     app.add_routes(routes)
-    web.run_app(app, port=8000)
+    web.run_app(app, host="127.0.0.1", port=8000)
