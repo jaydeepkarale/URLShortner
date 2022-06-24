@@ -1,4 +1,3 @@
-from email import header
 from aiohttp import web
 import sqlite3
 import validators
